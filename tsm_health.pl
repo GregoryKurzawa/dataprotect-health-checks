@@ -9,7 +9,7 @@ use Term::ANSIColor;
 # ------------------------------------------------------
 
 my $DSMC = '/usr/bin/dsmadmc';
-my $euaid = 'kdrq';
+my $euaid = '';
 my $password = '';
 
 my @sp_server = ( "TSM2",

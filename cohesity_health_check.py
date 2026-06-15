@@ -5,7 +5,6 @@
 
 import json
 import time
-import statics
 import argparse
 import cohesity
 
@@ -22,26 +21,6 @@ reconfigure(highlight=False)
 def check_stuck_archival_runs():
 
     print('\n\nProtectionGroup Archival Runs')
-
-    # urn = '/v2/data-protect/protection-groups?includeTenants=True&isActive=True&isPaused=False'
-    # r = cohesity.fetch_api_data( urn, args )
-
-    # for pgr in r['protectionGroups']:
-
-        # urn = '/v2/data-protect/protection-groups/' + pgr['id'] + '/runs?includeTenants=True&archivalRunStatus=Running'
-
-        # r = cohesity.fetch_api_data( urn, args )
-
-        # if len(r['runs']) == 0:
-            # rprint(':white_check_mark: no running archival jobs for ProtectionGroup [#ffffff]' + pgr['name'] + '[/]')
-
-        # else:
-            # try: target = r['runs'][0]['archivalInfo']['archivalTargetResults'][0]['targetName']
-            # except: target = "na"
-            # try: status = r['runs'][0]['archivalInfo']['archivalTargetResults'][0]['status']
-            # except: status = "na"
-            # print(':yellow_circle:' + ' ' + r['runs'][0]['protectionGroupName'] + ' ' + target + ' ' + status)
-
 
     urn = urn = '/v2/data-protect/protection-groups?includeTenants=True&includeLastRunInfo=true&lastRunArchivalStatus=Running'
     r = cohesity.fetch_api_data( urn, args )
@@ -79,8 +58,8 @@ def check_remote_cluster_connectivity():
 # ------------------------------------------------
 # start a ProtectionGroup run
 # c: cluster [ east | west ]
-# pg: ProtectionGroup ID
 # t: tenand ID
+# pg: ProtectionGroup ID
 # ------------------------------------------------
 
 def start_ProtectionGroup_run( c, t, pg ):
@@ -106,11 +85,6 @@ def start_ProtectionGroup_run( c, t, pg ):
     urn = '/v2/data-protect/protection-groups/' + pg + '/runs'
     pr = cohesity.post_api_data( urn, args, body=b, tenant=t )
 
-    # try: print(pr)
-    # except: print('no return')
-    # try: print(pr.text)
-    # except: print('no text')
-
     # The POST returns the ID of the ProtectionGroup.
 
     return pr
@@ -120,15 +94,13 @@ def start_ProtectionGroup_run( c, t, pg ):
 # ------------------------------------------------
 # monitor a ProtectionGroup run
 # c: cluster [ east | west ]
-# pg: ProtectionGroup ID
 # t: tenand ID
+# pg: ProtectionGroup ID
 # ------------------------------------------------
 
 def monitor_ProtectionGroup_run( c, t, pg ):
 
-    # get the time in USECS -1h
-    # ti = ( int(time.time()) - 3600 ) * 1000000 # -1h
-    # ti = ( int(time.time()) - 1800 ) * 1000000 # -.5h
+    # get the time in USECS
     ti = ( int(time.time()) - 300 ) * 1000000 # -5m
 
     print ( 'waiting for PG Run to start ', end='', flush=True )
@@ -147,16 +119,6 @@ def monitor_ProtectionGroup_run( c, t, pg ):
         if ( runs >= 1 ):
 
             for run in r['runs']:
-
-                # Local_startStr = cohesity.usecs_to_string(run['localBackupInfo']['startTimeUsecs'])
-                # Local_endStr = cohesity.usecs_to_string(run['localBackupInfo']['endTimeUsecs'])
-                # Local_succ_obj = str(run['localBackupInfo']['successfulObjectsCount'])
-                # Local_fail_obj = str(run['localBackupInfo']['failedObjectsCount'])
-
-                # try: repl_target = run['replicationInfo']['replicationTargetResults'][0]['clusterName']
-                # except: repl_target = 'na'
-                # try: arch_target = run['archivalInfo']['archivalTargetResults'][0]['targetName']
-                # except: arch_target = 'na'
 
                 try: local_status = run['localBackupInfo']['status']
                 except: local_status = 'Not Started'
@@ -179,9 +141,6 @@ def monitor_ProtectionGroup_run( c, t, pg ):
                 elif ( arch_status == 'Accepted' ): asc = '[#6699ff]Accepted[/]'
                 elif ( arch_status == 'Running' ): asc = '[#cc66ff]Running[/]'
                 else: asc = '[##8c8c8c]' + arch_status + '[/]'
-
-                # Clear the last four lines to stdout.
-                # print('\033[A\033[K\033[A\033[K\033[A\033[K\033[A\033[K', end='', flush=True)
 
                 print('\r', end='', flush=True)
                 rprint('PG:[#ffffff]' + run['protectionGroupName'] + '[/] Local:' + lsc + ' Replication:' + rsc + ' Archival:' + asc + '\t\t\t', end='', flush=True)

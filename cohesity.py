@@ -3,7 +3,6 @@ import sys
 import time
 import json
 import requests
-import statics
 import datetime
 import urllib3
 
