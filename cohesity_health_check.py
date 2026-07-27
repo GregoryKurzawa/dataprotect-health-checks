@@ -50,7 +50,7 @@ def check_remote_cluster_connectivity():
 
         isReachable = rc['replicationParams']['allEndpointsReachable']
         if (isReachable): isReachableText = '[#27F550]Connected[/]'
-        else: isReachableText = '[#27A3F5]Disconnect[/]'
+        else: isReachableText = '[#27A3F5]one or more endpoints unreachable[/]'
         rprint(rc['clusterName'] + ': ' + isReachableText)
 
 
@@ -130,22 +130,24 @@ def monitor_ProtectionGroup_run( c, t, pg ):
                 if ( local_status == 'Succeeded' ): lsc = '[#27F550]Succeeded[/]'
                 elif ( local_status == 'Accepted' ): lsc = '[#6699ff]Accepted[/]'
                 elif ( local_status == 'Running' ): lsc = '[#cc66ff]Running[/]'
-                else: lsc = '[##8c8c8c]' + local_status + '[/]'
+                else: lsc = '[#8c8c8c]' + local_status + '[/]'
 
                 if ( repl_status == 'Succeeded' ): rsc = '[#27F550]Succeeded[/]'
                 elif ( repl_status == 'Accepted' ): rsc = '[#6699ff]Accepted[/]'
                 elif ( repl_status == 'Running' ): rsc = '[#cc66ff]Running[/]'
-                else: rsc = '[##8c8c8c]' + repl_status + '[/]'
+                else: rsc = '[#8c8c8c]' + repl_status + '[/]'
 
                 if ( arch_status == 'Succeeded' ): asc = '[#27F550]Succeeded[/]'
                 elif ( arch_status == 'Accepted' ): asc = '[#6699ff]Accepted[/]'
                 elif ( arch_status == 'Running' ): asc = '[#cc66ff]Running[/]'
-                else: asc = '[##8c8c8c]' + arch_status + '[/]'
+                else: asc = '[#8c8c8c]' + arch_status + '[/]'
 
                 print('\r', end='', flush=True)
                 rprint('PG:[#ffffff]' + run['protectionGroupName'] + '[/] Local:' + lsc + ' Replication:' + rsc + ' Archival:' + asc + '\t\t\t', end='', flush=True)
 
-                if ( local_status == "Succeeded" and repl_status == "Succeeded" and arch_status == "Succeeded" ):
+                if (    local_status in {"Succeeded", "Canceled"} and 
+                        repl_status in {"Succeeded", "Canceled"} and 
+                        arch_status in {"Succeeded", "Canceled"}     ):
                     pg_run_complete = True
                     
 
@@ -249,6 +251,7 @@ cohesity.validate_token(args)
 
 # report on connectivity to remote clusters
 check_remote_cluster_connectivity()
+exit(0)
 
 # uncomment the following to start and monitor a ProtectionGroup Run
 start_ProtectionGroup_run( args.cluster, '001107078/', pg )

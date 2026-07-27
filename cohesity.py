@@ -31,10 +31,10 @@ def validate_token(args):
         m_ti = 0
 
     if ( m_ti <= (epoch_ti - TOKEN_MAX_AGE) ):
-        print ('cohesity token needs to be refreshed')
+        print ('\ncohesity token: needs refreshed')
         refresh_token(args)
     else:
-        print ('cohesity token is still good')
+        rprint ('\ncohesity token: :white_check_mark:')
 
 
 

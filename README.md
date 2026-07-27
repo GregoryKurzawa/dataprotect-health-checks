@@ -19,4 +19,8 @@ You can install the needed modules from within the virtual environment:
    (venv) /dataprotect-health-checks$ pip3 install requests
    (venv) /dataprotect-health-checks$ pip3 install rich
 
-Passwords will have to be added to both scripts and updated when changes occur.
+Passwords must be added to cohesity.py and tsm_health.pl before running.
+
+Source the virtual environment before running:
+$ source ./venv/bin/activate
+$ python3 cohesity_health_check.py -c [ west | east ]
