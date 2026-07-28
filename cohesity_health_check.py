@@ -251,7 +251,6 @@ cohesity.validate_token(args)
 
 # report on connectivity to remote clusters
 check_remote_cluster_connectivity()
-exit(0)
 
 # uncomment the following to start and monitor a ProtectionGroup Run
 start_ProtectionGroup_run( args.cluster, '001107078/', pg )
