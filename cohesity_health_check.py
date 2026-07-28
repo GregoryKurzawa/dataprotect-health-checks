@@ -264,6 +264,7 @@ print('\nsleeping 3s before checking refreshed sources\n')
 time.sleep(3)
 show_actifio_sources()
 
-print('\nCohesity Health Check complete\n')
+print('\nCohesity Health Check complete.')
+rprint('Have a good day! :sunglasses:\n')
 
 exit(0)
