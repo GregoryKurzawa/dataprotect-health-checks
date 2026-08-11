@@ -9,7 +9,7 @@ use Term::ANSIColor;
 # ------------------------------------------------------
 
 my $DSMC = '/usr/bin/dsmadmc';
-my $euaid = 'kdrq';
+my $euaid = '';
 my $password = '';
 
 my @sp_server = ( "TSM2",
@@ -22,8 +22,7 @@ my @sp_server = ( "TSM2",
 	 	  "TSM5_S3" );
 
 # FOR TESTING SPECIFIC INSTANCES
-# my @sp_server = ( "TSM3", "TSM3_S3", "TSM2", "TSM2_S3" );
-
+# my @sp_server = ( "TSM2" );
 
 
 
@@ -58,6 +57,8 @@ AND end_time >= current_timestamp - 1 hours";
 my $q_actlog = "q actlog begint=-1 msg=0839";
 
 my $validate_cloud_conn = "validate cloud connection=S3_DBB";
+
+my $q_admin_events = "q eve * t=a begind=-3 endd=today ex=yes";
 
 
 
@@ -102,8 +103,45 @@ foreach ( @sp_server ) {
 	else { print colored ("$td[30]\n", "red"); }
 
 
+	# ---------------------------------------------------------
+	# Check admin events
+	# ---------------------------------------------------------
+	
+	$completed_count = 0;
+	$missed_count = 0;
+	$in_progress_count = 0;
+	$completed_color = "red";
+	$missed_color = "red";
+	$fail_color = "red";
+	$in_progress_color = "red";
+	print colored ( "\n[$_]", "bold blue" );
+	print ( " Checking Admin Events\n" );
+	my @SPOUT_SUMMARY = `$DSMC -se=$_ -id=$euaid -pa=$password -dataonly=y -tab "$q_admin_events"`;
+	foreach ( @SPOUT_SUMMARY ) {
+    	    if ( /Completed$/i ) { $completed_count += 1; }
+            elsif ( /Missed$/i ) { $missed_count += 1; }
+            elsif ( /In Progress$/i ) { $in_progress_count += 1; }
+	}
+	if ( $completed_count >= 1 ) { $completed_color = "green"; }
+	if ( $missed_count == 0 ) { $missed_color = "green"; }
+	if ( $in_progress_count == 0 ) { $in_progress_color = "green"; }
+	# print ( "Completed admin jobs in past 3 days: " );
+	# print colored ( "$completed_count\n", $completed_color );
+	# print ( "In Progress admin jobs in past 3 days: " );
+	# print colored ( "$in_progress_count\n", $in_progress_color );
+	print ( "Missed admin jobs in past 3 days: " );
+	print colored ( "$missed_count\n", $missed_color );
+	foreach ( @SPOUT_SUMMARY ) {
+		next if ( /^[ANR|ANS]/ );
+		print colored ($_, "red");
+	}
+	
+
+
+	# ---------------------------------------------------------
 	# Check Summary table for BACKUP/ARCHIVE summaries.
 	# Not needed on S3 instances.
+	# ---------------------------------------------------------
 	
 	if ( not $_ =~ /S3$/ ) {
 	
