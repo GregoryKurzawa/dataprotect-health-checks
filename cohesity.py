@@ -54,7 +54,7 @@ def refresh_token(args):
 
     else:
         username = 'svc_api'
-        password = ''
+        password = 'xDB.bYwpgw9ptA6z2@ia'
 
     ccFull = get_full_cluster_name(args.cluster)
     url = 'https://' + ccFull + '/irisservices/api/v1/public/accessTokens'
