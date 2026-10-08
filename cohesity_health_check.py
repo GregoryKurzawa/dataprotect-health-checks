@@ -145,9 +145,9 @@ def monitor_ProtectionGroup_run( c, t, pg ):
                 print('\r', end='', flush=True)
                 rprint('PG:[#ffffff]' + run['protectionGroupName'] + '[/] Local:' + lsc + ' Replication:' + rsc + ' Archival:' + asc + '\t\t\t', end='', flush=True)
 
-                if (    local_status in {"Succeeded", "Canceled"} and 
-                        repl_status in {"Succeeded", "Canceled"} and 
-                        arch_status in {"Succeeded", "Canceled"}     ):
+                if (    local_status in {"Succeeded", "Canceled", "Failed"} and 
+                        repl_status in {"Succeeded", "Canceled", "Skipped"} and 
+                        arch_status in {"Succeeded", "Canceled", "Skipped"}     ):
                     pg_run_complete = True
                     
 
